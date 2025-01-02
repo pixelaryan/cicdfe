@@ -21,6 +21,7 @@ jobs:
           paths:
             - node_modules
           key: app-{{checksum "package.json"}}
+
   deploy-to-aws:
     docker:
       - image: cimg/node:20.8.0
@@ -60,6 +61,7 @@ jobs:
             else
               echo "Branch not found"
             fi           
+
   deploy-to-cloudfront:
     docker:
       - image: cimg/node:20.8.0
@@ -102,24 +104,13 @@ jobs:
             fi
 
 workflows:
+  version: 2
   build_and_deploy:
     jobs:
       - build
       - deploy-to-aws:
           requires:
             - build
-          filters:
-            branches:
-              only:
-                - master
-                - staging
-                - development
       - deploy-to-cloudfront:
           requires:
             - deploy-to-aws
-          filters:
-            branches:
-              only:
-                - master
-                - staging
-                - development

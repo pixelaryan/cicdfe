@@ -60,6 +60,7 @@ jobs:
               else
                 echo "Branch not found"
               fi
+              
 deploy-to-cloudfront:
     docker:
       - image: circleci/node:20.18.1

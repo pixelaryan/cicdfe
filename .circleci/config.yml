@@ -51,18 +51,19 @@ jobs:
       - run:
           name: Deploy to AWS S3
           command: |
-            if [ ${CIRCLE_BRANCH} == "master" ]; then
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
               aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_PROD} --delete
               echo "Deployed to S3"
-            elif [ ${CIRCLE_BRANCH} == "staging" ]; then
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_STAGING} --delete
               echo "Deployed to S3"
-            elif [ ${CIRCLE_BRANCH} == "development" ]; then
+            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
               aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_DEV} --delete
               echo "Deployed to S3"
             else
               echo "Branch not found"
-            fi           
+            fi
+         
 
   deploy-to-cloudfront:
     docker:
@@ -94,13 +95,13 @@ jobs:
           name: Deploy to AWS CloudFront
           command: |
             aws configure set preview.cloudfront true
-            if [ ${CIRCLE_BRANCH} == "master" ]; then
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
               aws cloudfront create-invalidation --distribution-id ${PROD_CDN_ID} --paths "/*"
               echo "Deployed to CloudFront"
-            elif [ ${CIRCLE_BRANCH} == "staging" ]; then
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               aws cloudfront create-invalidation --distribution-id ${STAGING_CDN_ID} --paths "/*"
               echo "Deployed to CloudFront"
-            elif [ ${CIRCLE_BRANCH} == "development" ]; then
+            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
               aws cloudfront create-invalidation --distribution-id ${DEV_CDN_ID} --paths "/*"
               echo "Deployed to CloudFront"
             else

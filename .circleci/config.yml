@@ -57,7 +57,7 @@ jobs:
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_STAGING} --delete
               echo "Deployed to S3"
-            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+            elif [ "${CIRCLE_BRANCH}" == "develop" ]; then
               aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_DEV} --delete
               echo "Deployed to S3"
             else
@@ -101,7 +101,7 @@ jobs:
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               aws cloudfront create-invalidation --distribution-id ${STAGING_CDN_ID} --paths "/*"
               echo "Deployed to CloudFront"
-            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+            elif [ "${CIRCLE_BRANCH}" == "develop" ]; then
               aws cloudfront create-invalidation --distribution-id ${DEV_CDN_ID} --paths "/*"
               echo "Deployed to CloudFront"
             else
@@ -121,7 +121,7 @@ workflows:
               only:
                 - master
                 - staging
-                - development
+                - develop
       - deploy-to-cloudfront:
           requires:
             - deploy-to-aws
@@ -130,4 +130,4 @@ workflows:
               only:
                 - master
                 - staging
-                - development
+                - develop

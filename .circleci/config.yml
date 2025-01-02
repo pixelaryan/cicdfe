@@ -1,125 +1,126 @@
 version: 2.1
-  jobs:
-    build:
-      docker:
-        - image: circleci/node:20.18.1
+
+jobs: 
+  build: 
+    docker:
+      - image: circleci/node:20.18.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: 
+          name: Show Current Branch
+          command: echo ${CIRCLE_BRANCH}
+      - restore_cache:
+          keys:
+            - app-{{checksum "package.json"}}
+            - app-
+      - run: 
+          name: Install Dependencies
+          command: npm install
+      - save_cache:
+          path:
+            - node_modules
+          key: app-{{checksum "package.json"}}
+  deploy-to-aws:
+    docker:
+      - image: circleci/node:20.18.1
       working_directory: ~/repo
       steps:
         - checkout
-        - run: 
+        - run:
             name: Show Current Branch
-            command: echo ${CIRCLE_BRANCH}
-        - restore_cache:
-            keys:
-              - app-{{checksum "package.json"}}
-              - app-
-        - run: 
-            name: Install Dependencies
-            command: npm install
-        - save_cache:
-            path:
-              - node_modules
-            key: app-{{checksum "package.json"}}
-    deploy-to-aws:
-      docker:
-        - image: circleci/node:20.18.1
-        working_directory: ~/repo
-        steps:
-          - checkout
-          - run:
-              name: Show Current Branch
-              command: echo ${CURRENT_BRANCH}
-          - run:
-              name: Install AWS CLI
-              working_directory: /
-              command: |
-                sudo apt-get -y update
-                sudo apt-get install -y awscli
-                sudo apt-get install -y python-pip python-dev build-essential
-          - run:
-              name: Build Project
-              command: | 
-                npm install
-                npm run build
-                cd build
-                zip ../build.zip -r *.[^.]*
-                echo "Build Successful" 
-          - run:
-              name: Deploy to AWS S3
-              command: |
-                if [ "${CURRENT_BRANCH}" == "master" ]; then
-                  aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_PROD} --delete
-                  echo "Deployed to S3"
-                elif [ "${CURRENT_BRANCH}" == "staging" ]; then
-                  aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_STAGING} --delete
-                  echo "Deployed to S3"
-                elif [ "${CURRENT_BRANCH}" == "development" ]; then
-                  aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_DEV} --delete
-                  echo "Deployed to S3"
-                else
-                  echo "Branch not found"
-                fi
-  deploy-to-cloudfront:
-      docker:
-        - image: circleci/node:20.18.1
-        working_directory: ~/repo
-        steps:
-          - checkout
-          - run:
-              name: Show Current Branch
-              command: echo ${CURRENT_BRANCH}
-          - run:
-              name: Install AWS CLI
-              working_directory: /
-              command: |
-                sudo apt-get -y update
-                sudo apt-get install -y awscli
-                sudo apt-get install -y python-pip python-dev build-essential
-          - run:
-              name: Build Project
-              command: | 
-                npm install
-                npm run build
-                cd build
-                zip ../build.zip -r *.[^.]*
-                echo "Build Successful" 
-          - run:
-              name: Deploy to AWS CloudFront
-              command: |
-                set configure set preview.cloudfront
-                if [ "${CURRENT_BRANCH}" == "master" ]; then
-                  aws cloudfront create-invalidation --distriution-id ${PROD_CDN_ID} --paths /\*
-                  echo "Deployed to S3"
-                elif [ "${CURRENT_BRANCH}" == "staging" ]; then
-                  aws cloudfront create-invalidation --distriution-id ${STAGING_CDN_ID} --paths /\*
-                  echo "Deployed to S3"
-                elif [ "${CURRENT_BRANCH}" == "development" ]; then
-                aws cloudfront create-invalidation --distriution-id ${DEV_CDN_ID} --paths /\*
-                  echo "Deployed to S3"
-                else
-                  echo "Branch not found"
-                fi
- 
-  workflows:
-    build_and_deploy:
-      jobs:
-        - build
-        - deploy-to-aws:
-            requires:
-              - build
-            filters:
-              branches:
+            command: echo ${CURRENT_BRANCH}
+        - run:
+            name: Install AWS CLI
+            working_directory: /
+            command: |
+              sudo apt-get -y update
+              sudo apt-get install -y awscli
+              sudo apt-get install -y python-pip python-dev build-essential
+        - run:
+            name: Build Project
+            command: | 
+              npm install
+              npm run build
+              cd build
+              zip ../build.zip -r *.[^.]*
+              echo "Build Successful" 
+        - run:
+            name: Deploy to AWS S3
+            command: |
+              if [ "${CURRENT_BRANCH}" == "master" ]; then
+                aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_PROD} --delete
+                echo "Deployed to S3"
+              elif [ "${CURRENT_BRANCH}" == "staging" ]; then
+                aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_STAGING} --delete
+                echo "Deployed to S3"
+              elif [ "${CURRENT_BRANCH}" == "development" ]; then
+                aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_DEV} --delete
+                echo "Deployed to S3"
+              else
+                echo "Branch not found"
+              fi
+deploy-to-cloudfront:
+    docker:
+      - image: circleci/node:20.18.1
+      working_directory: ~/repo
+      steps:
+        - checkout
+        - run:
+            name: Show Current Branch
+            command: echo ${CURRENT_BRANCH}
+        - run:
+            name: Install AWS CLI
+            working_directory: /
+            command: |
+              sudo apt-get -y update
+              sudo apt-get install -y awscli
+              sudo apt-get install -y python-pip python-dev build-essential
+        - run:
+            name: Build Project
+            command: | 
+              npm install
+              npm run build
+              cd build
+              zip ../build.zip -r *.[^.]*
+              echo "Build Successful" 
+        - run:
+            name: Deploy to AWS CloudFront
+            command: |
+              set configure set preview.cloudfront
+              if [ "${CURRENT_BRANCH}" == "master" ]; then
+                aws cloudfront create-invalidation --distriution-id ${PROD_CDN_ID} --paths /\*
+                echo "Deployed to S3"
+              elif [ "${CURRENT_BRANCH}" == "staging" ]; then
+                aws cloudfront create-invalidation --distriution-id ${STAGING_CDN_ID} --paths /\*
+                echo "Deployed to S3"
+              elif [ "${CURRENT_BRANCH}" == "development" ]; then
+              aws cloudfront create-invalidation --distriution-id ${DEV_CDN_ID} --paths /\*
+                echo "Deployed to S3"
+              else
+                echo "Branch not found"
+              fi
+
+workflows:
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy-to-aws:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+                - staging
+                - development
+      - deploy-to-cloudfront:
+          requires:
+            - deploy-to-aws
+          filters:
+            - branches:
                 only:
                   - master
                   - staging
                   - development
-        - deploy-to-cloudfront:
-            requires:
-              - deploy-to-aws
-            filters:
-              - branches:
-                  only:
-                    - master
-                    - staging
-                    - development
 

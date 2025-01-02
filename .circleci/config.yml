@@ -43,7 +43,7 @@ jobs:
             npm install
             npm run build
             cd build
-            zip ../build.zip -r *.[^.]*
+            zip ../build.zip -r *.[^.]* 
             echo "Build Successful" 
       - run:
           name: Deploy to AWS S3
@@ -82,21 +82,21 @@ jobs:
             npm install
             npm run build
             cd build
-            zip ../build.zip -r *.[^.]*
+            zip ../build.zip -r *.[^.]* 
             echo "Build Successful" 
       - run:
           name: Deploy to AWS CloudFront
           command: |
-            set configure set preview.cloudfront
+            aws configure set preview.cloudfront true
             if [ ${CIRCLE_BRANCH} == "master" ]; then
-              aws cloudfront create-invalidation --distriution-id ${PROD_CDN_ID} --paths /\*
-              echo "Deployed to S3"
+              aws cloudfront create-invalidation --distribution-id ${PROD_CDN_ID} --paths "/*"
+              echo "Deployed to CloudFront"
             elif [ ${CIRCLE_BRANCH} == "staging" ]; then
-              aws cloudfront create-invalidation --distriution-id ${STAGING_CDN_ID} --paths /\*
-              echo "Deployed to S3"
+              aws cloudfront create-invalidation --distribution-id ${STAGING_CDN_ID} --paths "/*"
+              echo "Deployed to CloudFront"
             elif [ ${CIRCLE_BRANCH} == "development" ]; then
-              aws cloudfront create-invalidation --distriution-id ${DEV_CDN_ID} --paths /\*
-              echo "Deployed to S3"
+              aws cloudfront create-invalidation --distribution-id ${DEV_CDN_ID} --paths "/*"
+              echo "Deployed to CloudFront"
             else
               echo "Branch not found"
             fi
@@ -123,4 +123,3 @@ workflows:
                 - master
                 - staging
                 - development
-

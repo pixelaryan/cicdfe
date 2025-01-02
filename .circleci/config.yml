@@ -36,8 +36,10 @@ jobs:
           working_directory: /
           command: |
             sudo apt-get -y update
-            sudo apt-get install -y awscli
-            python2-dev python2 python-dev-is-python3
+            sudo apt-get install -y unzip curl
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - run:
           name: Build Project
           command: | 
@@ -45,7 +47,7 @@ jobs:
             npm run build
             cd build
             zip ../build.zip -r *.[^.]* 
-            echo "Build Successful" 
+            echo "Build Successful"
       - run:
           name: Deploy to AWS S3
           command: |

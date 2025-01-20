@@ -137,7 +137,7 @@ jobs:
                   "fields": [
                     {
                       "type": "plain_text",
-                      "*Build Status:* {{build_status}}"
+                      "text": "*Build Status:* {{build_status}}",
                       "emoji": true
                     },
                     {

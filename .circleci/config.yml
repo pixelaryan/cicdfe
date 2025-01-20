@@ -135,7 +135,6 @@ jobs:
       - slack/notify:
           event: 'always'
           channel: 'cicdfe'
-          template: ''
           custom: |
             {
               "blocks": [
@@ -143,22 +142,13 @@ jobs:
                   "type": "section",
                   "fields": [
                       {
-                        "type": "mrkdwn",
-                        "text": "*Build Status:*",
-                        "emoji": true
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Project:*",
-                        "emoji": true
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Build URL:* Click here to view the build",
-                        "emoji": true
+                        "type": "section",
+                        "text": {
+                          "type": "mrkdwn",
+                          "text": "*Build Status:* Success"
+                        }
                       }
                     ]
-
                 }
               ]
             }

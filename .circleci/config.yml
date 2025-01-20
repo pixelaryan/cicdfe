@@ -136,18 +136,18 @@ jobs:
                   "type": "section",
                   "fields": [
                     {
-                      "type": "plain_text",
-                      "text": "*Build Status:* {{build_status}}",
+                      "type": "mrkdwn",
+                      "text": "*Build Status:* ${CIRCLE_JOB} ${BUILD_STATUS}",
                       "emoji": true
                     },
                     {
-                      "type": "plain_text",
-                      "text": "*Project:* {{project}}",
+                      "type": "mrkdwn",
+                      "text": "*Project:* ${PROJECT_NAME}",
                       "emoji": true
                     },
                     {
-                      "type": "plain_text",
-                      "text": "*Build URL:* <{{build_url}}|Click here to view the build>",
+                      "type": "mrkdwn",
+                      "text": "*Build URL:* <${BUILD_URL}|Click here to view the build>",
                       "emoji": true
                     }
                   ]

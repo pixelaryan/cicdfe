@@ -133,25 +133,23 @@ jobs:
 
       - run: echo "Slack notification"
       - slack/notify:
-          event: 'always'
+          event: always
           channel: 'cicdfe'
           custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "fields": [
+              {
+                "blocks": [
+                  {
+                    "type": "section",
+                    "fields": [
                       {
-                        "type": "section",
-                        "text": {
-                          "type": "mrkdwn",
-                          "text": "*Build Status:* Success"
-                        }
+                        "type": "plain_text",
+                        "text": "*This is a text notification*",
+                        "emoji": true
                       }
                     ]
-                }
-              ]
-            }
+                  }
+                ]
+              }
 
           
 

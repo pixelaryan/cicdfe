@@ -171,27 +171,27 @@ workflows:
   build_and_deploy:
     jobs:
       - build
-      - deploy-to-aws:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - master
-                - staging
-                - develop
-      - deploy-to-cloudfront:
-          requires:
-            - deploy-to-aws
-          filters:
-            branches:
-              only:
-                - master
-                - staging
-                - develop
+      # - deploy-to-aws:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - staging
+      #           - develop
+      # - deploy-to-cloudfront:
+      #     requires:
+      #       - deploy-to-aws
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - staging
+      #           - develop
       - notify-via-slack:
           requires:
-            - deploy-to-cloudfront
+            - build
           filters:
             branches:
               only:

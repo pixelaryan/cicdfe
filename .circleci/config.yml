@@ -131,47 +131,28 @@ jobs:
           template: ''
           custom: |
             {
-              blocks: [
+              "blocks": [
                 {
-                  "type": 'header',
-                  "text": {
-                    "type": 'plain_text',
-                    "text": '${CIRCLE_BRANCH} branch deployment successful'
-                  }
-                },
-                {
-                  "type": 'section',
-                  fields: [
-                  
+                  "type": "section",
+                  "fields": [
                     {
-                      "type": 'mrkdwn',
-                      "text": '*Branch:* '${CIRCLE_BRANCH}
+                      "type": "plain_text",
+                      "*Build Status:* {{build_status}}"
+                      "emoji": true
                     },
                     {
-                      "type": 'mrkdwn',
-                      "text": '*Branch:* '${CIRCLE_BRANCH}
+                      "type": "plain_text",
+                      "text": "*Project:* {{project}}",
+                      "emoji": true
                     },
                     {
-                      "type": 'mrkdwn',
-                      "text": '*Build Number:* '${CIRCLE_BUILD_NUM}
-                    },
-                    {
-                      "type": 'mrkdwn',
-                      "text": '*Build URL:* '${CIRCLE_BUILD_URL}
-                    },
-                    {
-                      "type": 'mrkdwn',
-                      "text": '*Commit URL:* '${CIRCLE_COMPARE_URL}
-                    },
-                    {
-                      "type": 'mrkdwn',
-                      "text": '*Author:* '${CIRCLE_PROJECT_USERNAME}
+                      "type": "plain_text",
+                      "text": "*Build URL:* <{{build_url}}|Click here to view the build>",
+                      "emoji": true
                     }
-
                   ]
-                  }
                 }
-                ]
+              ]
             }
 
           

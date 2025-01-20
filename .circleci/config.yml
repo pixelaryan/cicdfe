@@ -127,7 +127,6 @@ jobs:
       - run:
           name: "Debug CircleCI Environment Variables"
           command: |
-            echo "Build Status: ${CIRCLE_BUILD_STATUS}"
             echo "Job Name: ${CIRCLE_JOB}"
             echo "Project Name: ${CIRCLE_PROJECT_REPONAME}"
             echo "Build URL: ${CIRCLE_BUILD_URL}"
@@ -145,7 +144,7 @@ jobs:
                   "fields": [
                       {
                         "type": "mrkdwn",
-                        "text": "*Build Status:* ${CIRCLE_BUILD_STATUS} ${CIRCLE_JOB}",
+                        "text": "*Build Status:* ${CIRCLE_JOB}",
                         "emoji": true
                       },
                       {

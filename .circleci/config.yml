@@ -144,17 +144,17 @@ jobs:
                   "fields": [
                       {
                         "type": "mrkdwn",
-                        "text": "*Build Status:* ${CIRCLE_JOB}",
+                        "text": "*Build Status:*",
                         "emoji": true
                       },
                       {
                         "type": "mrkdwn",
-                        "text": "*Project:* ${CIRCLE_PROJECT_REPONAME}",
+                        "text": "*Project:*",
                         "emoji": true
                       },
                       {
                         "type": "mrkdwn",
-                        "text": "*Build URL:* <${CIRCLE_BUILD_URL}|Click here to view the build>",
+                        "text": "*Build URL:* Click here to view the build",
                         "emoji": true
                       }
                     ]

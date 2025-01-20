@@ -1,36 +1,53 @@
 version: 2.1
 
-jobs: 
-  build: 
+orbs:
+  slack: circleci/slack@4.2.0
+
+executors:
+  node-executor:
     docker:
       - image: cimg/node:20.8.0
     working_directory: ~/repo
-    steps:
-      - checkout
-      - run: 
-          name: Show Current Branch
-          command: echo ${CIRCLE_BRANCH}
-      - restore_cache:
-          keys:
-            - app-{{checksum "package.json"}}
-            - app-
-      - run: 
-          name: Install Dependencies
-          command: npm install
-      - save_cache:
+  slack-executor:
+    docker:
+      - image: 'cibuilds/base:latest'
+    resource_class: small
+
+aliases:
+  - &show-current-branch
+    run:
+      name: Show Current Branch
+      command: echo ${CIRCLE_BRANCH}
+  - &restore-cache
+    restore_cache:
+      keys:
+        - app-{{checksum "package.json"}}
+        - app-
+  - &install-packages
+    run: 
+      name: Install Dependencies
+      command: npm install
+  - &save-cache
+    save_cache:
           paths:
             - node_modules
           key: app-{{checksum "package.json"}}
 
-  deploy-to-aws:
-    docker:
-      - image: cimg/node:20.8.0
-    working_directory: ~/repo
+jobs: 
+  build: 
+    executor: node-executor
     steps:
       - checkout
-      - run:
-          name: Show Current Branch
-          command: echo ${CIRCLE_BRANCH}
+      - *show-current-branch
+      - *restore-cache
+      - *install-packages
+      - *save-cache
+
+  deploy-to-aws:
+    executor: node-executor
+    steps:
+      - checkout
+      - *show-current-branch
       - run:
           name: Install AWS CLI
           working_directory: /
@@ -66,14 +83,10 @@ jobs:
          
 
   deploy-to-cloudfront:
-    docker:
-      - image: cimg/node:20.8.0
-    working_directory: ~/repo
+    executor: node-executor
     steps:
       - checkout
-      - run:
-          name: Show Current Branch
-          command: echo ${CIRCLE_BRANCH}
+      - *show-current-branch
       - run:
           name: Install AWS CLI
           working_directory: /
@@ -108,8 +121,63 @@ jobs:
               echo "Branch not found"
             fi
 
+  notify-via-slack:
+    executor: slack-executor
+    steps:
+      - run: echo "Slack notification"
+      - slack/notify:
+          event: 'always'
+          channel: 'cicdfe'
+          template: ''
+          custom: |
+            {
+              blocks: [
+                {
+                  "type": 'header',
+                  "text": {
+                    "type": 'plain_text',
+                    "text": '${CIRCLE_BRANCH} branch deployment successful'
+                  }
+                },
+                {
+                  "type": 'section',
+                  fields: [
+                  
+                    {
+                      "type": 'mrkdwn',
+                      "text": '*Branch:* '${CIRCLE_BRANCH}
+                    },
+                    {
+                      "type": 'mrkdwn',
+                      "text": '*Branch:* '${CIRCLE_BRANCH}
+                    },
+                    {
+                      "type": 'mrkdwn',
+                      "text": '*Build Number:* '${CIRCLE_BUILD_NUM}
+                    },
+                    {
+                      "type": 'mrkdwn',
+                      "text": '*Build URL:* '${CIRCLE_BUILD_URL}
+                    },
+                    {
+                      "type": 'mrkdwn',
+                      "text": '*Commit URL:* '${CIRCLE_COMPARE_URL}
+                    },
+                    {
+                      "type": 'mrkdwn',
+                      "text": '*Author:* '${CIRCLE_PROJECT_USERNAME}
+                    }
+
+                  ]
+                  }
+                }
+                ]
+            }
+
+          
+
+
 workflows:
-  version: 2
   build_and_deploy:
     jobs:
       - build
@@ -125,6 +193,15 @@ workflows:
       - deploy-to-cloudfront:
           requires:
             - deploy-to-aws
+          filters:
+            branches:
+              only:
+                - master
+                - staging
+                - develop
+      - notify-via-slack:
+          requires:
+            - deploy-to-cloudfront
           filters:
             branches:
               only:

@@ -135,22 +135,23 @@ jobs:
                 {
                   "type": "section",
                   "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Build Status:* ${CIRCLE_JOB} ${BUILD_STATUS}",
-                      "emoji": true
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Project:* ${PROJECT_NAME}",
-                      "emoji": true
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Build URL:* <${BUILD_URL}|Click here to view the build>",
-                      "emoji": true
-                    }
-                  ]
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Build Status:* ${CIRCLE_BUILD_STATUS} ${CIRCLE_JOB}",
+                        "emoji": true
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Project:* ${CIRCLE_PROJECT_REPONAME}",
+                        "emoji": true
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Build URL:* <${CIRCLE_BUILD_URL}|Click here to view the build>",
+                        "emoji": true
+                      }
+                    ]
+
                 }
               ]
             }
